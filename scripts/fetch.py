@@ -96,7 +96,15 @@ for attempt in range(1, 4):
             timeout=30
         )
         if post_resp.status_code == 200:
-            print(f"✅ POST success — {post_resp.text}")
+            print(f"POST response — {post_resp.text}")
+            try:
+                result = post_resp.json()
+            except ValueError:
+                result = {}
+            if result.get("status") != "ok":
+                print("❌ Apps Script reported failure")
+                sys.exit(1)
+            print("✅ POST success")
             break
         print(f"⚠️ POST attempt {attempt} — HTTP {post_resp.status_code}, retrying in 15s...")
     except requests.exceptions.RequestException as e:
