@@ -18,6 +18,14 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Connectivity test
+        run: |
+          echo "Runner IP: $(curl -s https://api.ipify.org)"
+          for u in kentucky west-virginia; do
+            echo "--- $u"
+            curl -s -o /dev/null -w "code=%{http_code} connect=%{time_connect}s\n" --connect-timeout 8 "https://www.lottery.net/$u/cash-pop/numbers" || echo "FAILED"
+          done
+
       - name: Run fetch script
         env:
           LOTTERY_URL   : ${{ secrets.WESTVIRGINIA_URL }}
